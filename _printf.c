@@ -1,48 +1,34 @@
 #include "main.h"
-#include <stdarg.h>
-#include <unistd.h>
 
 /**
- * _printf - Custom printf function
- * @format: Format string with conversion specifiers
- * Return: Number of characters printed (excluding null byte)
+ * _printf - function that replicates what printf does
+ * @format: a character string
+ *
+ * Return:  the number of characters printed
  */
 int _printf(const char *format, ...)
 {
-	va_list args;
-	const char *ptr;
+	print_type argument[] = {
+		{"c", _print_char},
+		{"s", _print_string},
+		{"%", _print_percent},
+		{"d", _print_int},
+		{"i", _print_int},
+		{"r", _print_reverse},
+		{"R", _print_rot13},
+		{"b", _print_binary},
+		{"u", _print_unsigned},
+		{"o", _print_octal},
+		{"x", _print_hex_l},
+		{"X", _print_hex_u},
+		{NULL, NULL}
+	};
+	va_list ap;
 	int count = 0;
 
-	va_start(args, format);
 
-	for (ptr = format; *ptr != '\0'; ptr++)
-	{
-		if (*ptr == '%' && *(ptr + 1) != '\0')
-		{
-			switch (*(ptr + 1))
-			{
-				case 'c':
-					count += write(1, va_arg(args, int), 1);
-					break;
-				case 's':
-					count += write(1, va_arg(args, char *), 1);
-					break;
-				case '%':
-					count += write(1, "%", 1);
-					break;
-				default:
-					count += write(1, "%", 1);
-					count += write(1, (ptr + 1), 1);
-			}
-			ptr++;
-		}
-		else
-		{
-			count += write(1, ptr, 1);
-		}
-	}
-
-	va_end(args);
-
+	va_start(ap, format);
+	count = get_print(format, argument, ap);
+	va_end(ap);
 	return (count);
 }
